@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  A // Admin
+  C // Common
+}
+
+model user {
+  id        Int @id @default(autoincrement())
+  name      String
+  password  String
+  email     String @unique
+  active    Boolean @default(true)
+  nickname  String
+  birthDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userType  UserType
+
+  reviews   review[]
+}
+
+model genre {
+  id          Int      @id @default(autoincrement())
+  description String
+  
+  movies      genreMovie[]
+  movie       movie[]
+}
+
+model movie {
+  id              Int       @id @default(autoincrement())
+  name            String
+  director        String
+  releaseYear     DateTime
+  genreId         Int
+  duration        String
+  production      String?
+  classification  Int
+  poster          String?
+  
+  genres          genreMovie[]
+  reviews         review[]
+  genre           genre     @relation(fields: [genreId], references: [id])  
+}
+
+model genreMovie {
+  id        Int   @id @default(autoincrement())
+  genreId   Int
+  movieId   Int
+
+  genre     genre @relation(fields: [genreId], references: [id])
+  movie     movie @relation(fields: [movieId], references: [id])
+}
+
+model review {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  movieId   Int
+  rating    Float
+  comment   String?
+
+  user      user  @relation(fields: [userId], references: [id])
+  movie     movie @relation(fields: [movieId], references: [id])
+}
