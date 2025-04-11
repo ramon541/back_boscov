@@ -3,7 +3,7 @@ import z from "zod";
 export const UserType = z.enum(["A", "C"]);
 
 const userSchema = z.object({
-  id: z.number().int().optional(),
+  id: z.number().optional(),
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   email: z.string().email("E-mail inválido"),
@@ -17,5 +17,7 @@ const userSchema = z.object({
   updatedAt: z.date().default(() => new Date()),
   userType: UserType,
 });
+
+export interface IUser extends z.infer<typeof userSchema> {}
 
 export default userSchema;
