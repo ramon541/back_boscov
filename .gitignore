@@ -8,6 +8,10 @@ lerna-debug.log*
 .pnpm-debug.log*
 yarn.lock
 
+# SQLite database files
+*.db
+*.db-journal
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
