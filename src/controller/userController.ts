@@ -5,19 +5,55 @@ import { IResponse } from "../interfaces";
 import prisma from "../../prisma/prismaClient";
 import { StatusCodes } from "http-status-codes";
 import { Prisma } from "@prisma/client";
+import { Request, Response } from "express";
 
+// Tipos mais específicos para os parâmetros de request e response
 export interface IApiUserController {
-  createUser: (req: any, res: any) => Promise<void>;
-  getUser: (req: any, res: any) => Promise<void>;
-  getAllUsers: (req: any, res: any) => Promise<void>;
-  updateUser: (req: any, res: any) => Promise<void>;
-  deleteUser: (req: any, res: any) => Promise<void>;
+  createUser: (req: Request, res: Response) => Promise<Response>;
+  getUser: (req: Request, res: Response) => Promise<Response>;
+  getAllUsers: (req: Request, res: Response) => Promise<Response>;
+  updateUser: (req: Request, res: Response) => Promise<Response>;
+  deleteUser: (req: Request, res: Response) => Promise<Response>;
 }
+
+// Funções utilitárias - Programação Funcional
+const createErrorResponse = (message: string | string[], data: any = null): IResponse<any> => ({
+  success: false,
+  message,
+  data
+});
+
+const createSuccessResponse = <T>(message: string, data: T): IResponse<T> => ({
+  success: true,
+  message,
+  data
+});
+
+const handleZodError = (error: ZodError, res: Response): Response => {
+  const zodErrors = error.errors.map(err => err.message);
+  return res
+    .status(StatusCodes.BAD_REQUEST)
+    .json(createErrorResponse(zodErrors));
+};
+
+const handlePrismaError = (error: Prisma.PrismaClientKnownRequestError, res: Response): Response | null => {
+  if (error.code === "P2002") {
+    return res
+      .status(StatusCodes.CONFLICT)
+      .json(createErrorResponse("A unique constraint violation occurred. Check your input."));
+  }
+  return null;
+};
+
+const handleGenericError = (error: Error, res: Response): Response => {
+  const errorMessage = error.message || "Unknown error";
+  return res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json(createErrorResponse(`Internal server error: ${errorMessage}`));
+};
 
 const userController: IApiUserController = {
   createUser: async (req, res) => {
-    let response: IResponse<number | null> | null = null;
-
     try {
       const data = userSchema.parse(req.body);
 
@@ -26,254 +62,164 @@ const userController: IApiUserController = {
       });
 
       if (!user) {
-        response = {
-          success: false,
-          message: "User not created!",
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json(createErrorResponse("User not created!"));
       }
 
-      response = {
-        success: true,
-        message: "User created!",
-        data: user.id,
-      };
+      return res
+        .status(StatusCodes.CREATED)
+        .json(createSuccessResponse("User created!", user.id));
 
-      res.status(StatusCodes.CREATED).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
       }
 
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2002") {
-          response = {
-            success: false,
-            message:
-              "A unique constraint violation occurred. Check your input.",
-            data: null,
-          };
-          res.status(StatusCodes.CONFLICT).json(response);
-        }
+        const prismaResponse = handlePrismaError(error, res);
+        if (prismaResponse) return prismaResponse;
       }
 
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      return handleGenericError(error as Error, res);
     }
   },
 
-  // ==========================================================================
   getUser: async (req, res) => {
-    let response: IResponse<IUser | null> | null = null;
-
     try {
       const userId = Number(req.params.id);
 
       if (isNaN(userId)) {
-        response = { success: false, message: "Invalid params", data: null };
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json(createErrorResponse("Invalid params"));
       }
+
       const user = await prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
+        where: { id: userId },
       });
+
       if (!user) {
-        response = {
-          success: true,
-          message: "User don't exist!",
-          data: null,
-        };
-        res.status(StatusCodes.IM_A_TEAPOT).json(response);
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json(createSuccessResponse("User doesn't exist!", null));
       }
-      response = { success: true, message: "User found!", data: user };
-      res.status(StatusCodes.OK).json(response);
+
+      return res
+        .status(StatusCodes.OK)
+        .json(createSuccessResponse("User found!", user));
+
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
       }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      return handleGenericError(error as Error, res);
     }
   },
 
-  // ==========================================================================
   getAllUsers: async (req, res) => {
-    let response: IResponse<Array<IUser> | null> | null = null;
-
     try {
-      const user = await prisma.user.findMany();
+      const users = await prisma.user.findMany();
 
-      if (!user) {
-        response = {
-          success: true,
-          message: "Database is empty!",
-          data: null,
-        };
-
-        res.status(StatusCodes.NO_CONTENT).json(response);
+      // findMany retorna um array vazio se não encontrar nada, não null
+      if (users.length === 0) {
+        return res
+          .status(StatusCodes.OK)
+          .json(createSuccessResponse("Database is empty!", []));
       }
 
-      response = { success: true, message: "Users found!", data: user };
-      res.status(StatusCodes.OK).json(response);
+      return res
+        .status(StatusCodes.OK)
+        .json(createSuccessResponse("Users found!", users));
+
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
       }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      return handleGenericError(error as Error, res);
     }
   },
 
-  // ==========================================================================
   updateUser: async (req, res) => {
-    let response: IResponse<IUser | null> | null = null;
-    // TODO: Ajustar para não alterar a data de criação!!
     try {
+      const userId = Number(req.body.id);
+      
+      if (!userId || isNaN(userId)) {
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json(createErrorResponse("Invalid user ID"));
+      }
+      
       const data = userSchema.parse(req.body);
 
+      // Exclui campos que não devem ser atualizados
+      const { createdAt, ...updateData } = data as any;
+
       const user = await prisma.user.update({
-        where: {
-          id: Number(req.body.id),
-        },
-        data,
+        where: { id: userId },
+        data: updateData,
       });
 
-      if (!user) {
-        response = {
-          success: true,
-          message: "User don't exist!",
-          data: null,
-        };
+      return res
+        .status(StatusCodes.OK)
+        .json(createSuccessResponse("User updated!", user));
 
-        res.status(StatusCodes.NO_CONTENT).json(response);
-      }
-
-      response = { success: true, message: "User updated!", data: user };
-      res.status(StatusCodes.OK).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
       }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      
+      // Tratar erro de usuário não encontrado
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          return res
+            .status(StatusCodes.NOT_FOUND)
+            .json(createErrorResponse("User not found"));
+        }
+        const prismaResponse = handlePrismaError(error, res);
+        if (prismaResponse) return prismaResponse;
+      }
+      
+      return handleGenericError(error as Error, res);
     }
   },
 
-  // ==========================================================================
   deleteUser: async (req, res) => {
-    let response: IResponse<boolean | null> | null = null;
-
     try {
       const userId = Number(req.params.id);
 
       if (isNaN(userId)) {
-        response = { success: false, message: "Invalid params", data: null };
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json(createErrorResponse("Invalid params"));
       }
 
-      const data = await prisma.user.delete({
-        where: {
-          id: Number(req.params.id),
-        },
-      });
+      // Tenta excluir o usuário e captura erros de "não encontrado"
+      try {
+        const deletedUser = await prisma.user.delete({
+          where: { id: userId },
+        });
 
-      if (!data) {
-        response = {
-          success: true,
-          message: "User don't exist!",
-          data: null,
-        };
-
-        res.status(StatusCodes.NO_CONTENT).json(response);
+        return res
+          .status(StatusCodes.OK)
+          .json(createSuccessResponse("User deleted!", true));
+      } catch (deleteError) {
+        if (deleteError instanceof Prisma.PrismaClientKnownRequestError) {
+          if (deleteError.code === 'P2025') {
+            return res
+              .status(StatusCodes.NOT_FOUND)
+              .json(createErrorResponse("User not found"));
+          }
+        }
+        throw deleteError; // Re-lança o erro se não for relacionado a "não encontrado"
       }
-
-      response = { success: true, message: "User deleted!", data: true };
-      res.status(StatusCodes.OK).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
       }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      return handleGenericError(error as Error, res);
     }
   },
-} as const;
+};
 
 export default userController;
