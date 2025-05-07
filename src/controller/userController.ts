@@ -7,15 +7,15 @@ import { StatusCodes } from "http-status-codes";
 import { Prisma } from "@prisma/client";
 
 export interface IApiUserController {
-  createUser: (req: any, res: any) => Promise<void>;
-  getUser: (req: any, res: any) => Promise<void>;
-  getAllUsers: (req: any, res: any) => Promise<void>;
-  updateUser: (req: any, res: any) => Promise<void>;
-  deleteUser: (req: any, res: any) => Promise<void>;
+  createUser: (req: any, res: any, next: any) => Promise<void>;
+  getUser: (req: any, res: any, next: any) => Promise<void>;
+  getAllUsers: (req: any, res: any, next: any) => Promise<void>;
+  updateUser: (req: any, res: any, next: any) => Promise<void>;
+  deleteUser: (req: any, res: any, next: any) => Promise<void>;
 }
 
 const userController: IApiUserController = {
-  createUser: async (req, res) => {
+  createUser: async (req, res, next) => {
     let response: IResponse<number | null> | null = null;
 
     try {
@@ -43,43 +43,12 @@ const userController: IApiUserController = {
 
       res.status(StatusCodes.CREATED).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
-      }
-
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2002") {
-          response = {
-            success: false,
-            message:
-              "A unique constraint violation occurred. Check your input.",
-            data: null,
-          };
-          res.status(StatusCodes.CONFLICT).json(response);
-        }
-      }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      next(error);
     }
   },
 
   // ==========================================================================
-  getUser: async (req, res) => {
+  getUser: async (req, res, next) => {
     let response: IResponse<IUser | null> | null = null;
 
     try {
@@ -105,31 +74,12 @@ const userController: IApiUserController = {
       response = { success: true, message: "User found!", data: user };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
-      }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      next(error);
     }
   },
 
   // ==========================================================================
-  getAllUsers: async (req, res) => {
+  getAllUsers: async (req, res, next) => {
     let response: IResponse<Array<IUser> | null> | null = null;
 
     try {
@@ -148,31 +98,12 @@ const userController: IApiUserController = {
       response = { success: true, message: "Users found!", data: user };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
-      }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      next(error);
     }
   },
 
   // ==========================================================================
-  updateUser: async (req, res) => {
+  updateUser: async (req, res, next) => {
     let response: IResponse<IUser | null> | null = null;
     // TODO: Ajustar para não alterar a data de criação!!
     try {
@@ -198,31 +129,12 @@ const userController: IApiUserController = {
       response = { success: true, message: "User updated!", data: user };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
-      }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      next(error);
     }
   },
 
   // ==========================================================================
-  deleteUser: async (req, res) => {
+  deleteUser: async (req, res, next) => {
     let response: IResponse<boolean | null> | null = null;
 
     try {
@@ -252,26 +164,7 @@ const userController: IApiUserController = {
       response = { success: true, message: "User deleted!", data: true };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
-      if ((error as ZodError)?.errors) {
-        const zodErrors = (error as ZodError).errors.map((err) => err.message);
-
-        response = {
-          success: false,
-          message: zodErrors,
-          data: null,
-        };
-
-        res.status(StatusCodes.BAD_REQUEST).json(response);
-      }
-
-      response = {
-        success: false,
-        message:
-          "Internal server error: " + (error as Error)?.message ??
-          "Unknown error",
-        data: null,
-      };
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      next(error);
     }
   },
 } as const;
