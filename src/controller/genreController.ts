@@ -1,19 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 
 import genreSchema, { IGenre } from "../models/genre";
-import { IResponse } from "../interfaces";
+import { IApiController, IResponse } from "../interfaces";
 import prisma from "../../prisma/prismaClient";
 
-export interface IApiGenreController {
-  createGenre: (req: any, res: any, next: any) => Promise<void>;
-  getGenre: (req: any, res: any, next: any) => Promise<void>;
-  getAllGenres: (req: any, res: any, next: any) => Promise<void>;
-  updateGenre: (req: any, res: any, next: any) => Promise<void>;
-  deleteGenre: (req: any, res: any, next: any) => Promise<void>;
-}
+export type IApiGenreController = IApiController<IGenre>;
 
 const genreController: IApiGenreController = {
-  createGenre: async (req, res, next) => {
+  create: async (req, res, next) => {
     let response: IResponse<number | null> | null = null;
     try {
       const data = genreSchema.parse(req.body);
@@ -45,7 +39,7 @@ const genreController: IApiGenreController = {
   },
 
   // ==========================================================================
-  getGenre: async (req, res, next) => {
+  get: async (req, res, next) => {
     let response: IResponse<IGenre | null> | null = null;
     try {
       const genreId = Number(req.params.id);
@@ -75,7 +69,7 @@ const genreController: IApiGenreController = {
   },
 
   // ==========================================================================
-  getAllGenres: async (req, res, next) => {
+  getAll: async (req, res, next) => {
     let response: IResponse<Array<IGenre> | null> | null = null;
     try {
       const genres = await prisma.genre.findMany();
@@ -98,7 +92,7 @@ const genreController: IApiGenreController = {
   },
 
   // ==========================================================================
-  updateGenre: async (req, res, next) => {
+  update: async (req, res, next) => {
     let response: IResponse<IGenre | null> | null = null;
     try {
       const data = genreSchema.parse(req.body);
@@ -128,7 +122,7 @@ const genreController: IApiGenreController = {
   },
 
   // ==========================================================================
-  deleteGenre: async (req, res, next) => {
+  delete: async (req, res, next) => {
     let response: IResponse<boolean | null> | null = null;
     try {
       const genreId = Number(req.params.id);

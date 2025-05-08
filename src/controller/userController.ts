@@ -1,19 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 
 import userSchema, { IUser } from "../models/user";
-import { IResponse } from "../interfaces";
+import { IApiController, IResponse } from "../interfaces";
 import prisma from "../../prisma/prismaClient";
 
-export interface IApiUserController {
-  createUser: (req: any, res: any, next: any) => Promise<void>;
-  getUser: (req: any, res: any, next: any) => Promise<void>;
-  getAllUsers: (req: any, res: any, next: any) => Promise<void>;
-  updateUser: (req: any, res: any, next: any) => Promise<void>;
-  deleteUser: (req: any, res: any, next: any) => Promise<void>;
-}
+export type IApiUserController = IApiController<IUser>;
 
 const userController: IApiUserController = {
-  createUser: async (req, res, next) => {
+  create: async (req, res, next) => {
     let response: IResponse<number | null> | null = null;
 
     try {
@@ -46,7 +40,7 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  getUser: async (req, res, next) => {
+  get: async (req, res, next) => {
     let response: IResponse<IUser | null> | null = null;
 
     try {
@@ -77,7 +71,7 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  getAllUsers: async (req, res, next) => {
+  getAll: async (req, res, next) => {
     let response: IResponse<Array<IUser> | null> | null = null;
 
     try {
@@ -101,7 +95,7 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  updateUser: async (req, res, next) => {
+  update: async (req, res, next) => {
     let response: IResponse<IUser | null> | null = null;
     // TODO: Ajustar para não alterar a data de criação!!
     try {
@@ -132,7 +126,7 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  deleteUser: async (req, res, next) => {
+  delete: async (req, res, next) => {
     let response: IResponse<boolean | null> | null = null;
 
     try {
