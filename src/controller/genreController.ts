@@ -1,32 +1,31 @@
 import { StatusCodes } from "http-status-codes";
 
-import userSchema, { IUser } from "../models/user";
+import genreSchema, { IGenre } from "../models/genre";
 import { IResponse } from "../interfaces";
 import prisma from "../../prisma/prismaClient";
 
-export interface IApiUserController {
-  createUser: (req: any, res: any, next: any) => Promise<void>;
-  getUser: (req: any, res: any, next: any) => Promise<void>;
-  getAllUsers: (req: any, res: any, next: any) => Promise<void>;
-  updateUser: (req: any, res: any, next: any) => Promise<void>;
-  deleteUser: (req: any, res: any, next: any) => Promise<void>;
+export interface IApiGenreController {
+  createGenre: (req: any, res: any, next: any) => Promise<void>;
+  getGenre: (req: any, res: any, next: any) => Promise<void>;
+  getAllGenres: (req: any, res: any, next: any) => Promise<void>;
+  updateGenre: (req: any, res: any, next: any) => Promise<void>;
+  deleteGenre: (req: any, res: any, next: any) => Promise<void>;
 }
 
-const userController: IApiUserController = {
-  createUser: async (req, res, next) => {
+const genreController: IApiGenreController = {
+  createGenre: async (req, res, next) => {
     let response: IResponse<number | null> | null = null;
-
     try {
-      const data = userSchema.parse(req.body);
+      const data = genreSchema.parse(req.body);
 
-      const user = await prisma.user.create({
+      const genre = await prisma.genre.create({
         data,
       });
 
-      if (!user) {
+      if (!genre) {
         response = {
           success: false,
-          message: "User not created!",
+          message: "Genre not created!",
           data: null,
         };
 
@@ -35,8 +34,8 @@ const userController: IApiUserController = {
 
       response = {
         success: true,
-        message: "User created!",
-        data: user.id,
+        message: "Genre created!",
+        data: genre.id,
       };
 
       res.status(StatusCodes.CREATED).json(response);
@@ -46,30 +45,29 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  getUser: async (req, res, next) => {
-    let response: IResponse<IUser | null> | null = null;
-
+  getGenre: async (req, res, next) => {
+    let response: IResponse<IGenre | null> | null = null;
     try {
-      const userId = Number(req.params.id);
+      const genreId = Number(req.params.id);
 
-      if (isNaN(userId)) {
+      if (isNaN(genreId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
       }
-      const user = await prisma.user.findUnique({
+      const genre = await prisma.genre.findUnique({
         where: {
-          id: userId,
+          id: genreId,
         },
       });
-      if (!user) {
+      if (!genre) {
         response = {
           success: true,
-          message: "User don't exist!",
+          message: "Genre don't exist!",
           data: null,
         };
         res.status(StatusCodes.IM_A_TEAPOT).json(response);
       }
-      response = { success: true, message: "User found!", data: user };
+      response = { success: true, message: "Genre found!", data: genre };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
       next(error);
@@ -77,13 +75,12 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  getAllUsers: async (req, res, next) => {
-    let response: IResponse<Array<IUser> | null> | null = null;
-
+  getAllGenres: async (req, res, next) => {
+    let response: IResponse<Array<IGenre> | null> | null = null;
     try {
-      const users = await prisma.user.findMany();
+      const genres = await prisma.genre.findMany();
 
-      if (!users) {
+      if (!genres) {
         response = {
           success: true,
           message: "Database is empty!",
@@ -93,7 +90,7 @@ const userController: IApiUserController = {
         res.status(StatusCodes.NO_CONTENT).json(response);
       }
 
-      response = { success: true, message: "Users found!", data: users };
+      response = { success: true, message: "Genres found!", data: genres };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
       next(error);
@@ -101,30 +98,29 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  updateUser: async (req, res, next) => {
-    let response: IResponse<IUser | null> | null = null;
-    // TODO: Ajustar para não alterar a data de criação!!
+  updateGenre: async (req, res, next) => {
+    let response: IResponse<IGenre | null> | null = null;
     try {
-      const data = userSchema.parse(req.body);
+      const data = genreSchema.parse(req.body);
 
-      const user = await prisma.user.update({
+      const genre = await prisma.genre.update({
         where: {
           id: Number(req.body.id),
         },
         data,
       });
 
-      if (!user) {
+      if (!genre) {
         response = {
           success: true,
-          message: "User don't exist!",
+          message: "Genre don't exist!",
           data: null,
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
       }
 
-      response = { success: true, message: "User updated!", data: user };
+      response = { success: true, message: "Genre updated!", data: genre };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
       next(error);
@@ -132,18 +128,17 @@ const userController: IApiUserController = {
   },
 
   // ==========================================================================
-  deleteUser: async (req, res, next) => {
+  deleteGenre: async (req, res, next) => {
     let response: IResponse<boolean | null> | null = null;
-
     try {
-      const userId = Number(req.params.id);
+      const genreId = Number(req.params.id);
 
-      if (isNaN(userId)) {
+      if (isNaN(genreId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
       }
 
-      const data = await prisma.user.delete({
+      const data = await prisma.genre.delete({
         where: {
           id: Number(req.params.id),
         },
@@ -152,14 +147,14 @@ const userController: IApiUserController = {
       if (!data) {
         response = {
           success: true,
-          message: "User don't exist!",
+          message: "Genre don't exist!",
           data: null,
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
       }
 
-      response = { success: true, message: "User deleted!", data: true };
+      response = { success: true, message: "Genre deleted!", data: true };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
       next(error);
@@ -167,4 +162,4 @@ const userController: IApiUserController = {
   },
 } as const;
 
-export default userController;
+export default genreController;

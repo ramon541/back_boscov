@@ -8,4 +8,6 @@ const reviewSchema = z.object({
   comment: z.string().optional(),
 });
 
+export interface IReview extends z.infer<typeof reviewSchema> {}
+
 export default reviewSchema;

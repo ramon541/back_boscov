@@ -4,6 +4,7 @@ import morgan from "morgan";
 
 import swaggerDocs from "../libs/swaggerConfig";
 import userRoutes from "../routes/userRoutes";
+import genreRoutes from "../routes/genreRoutes";
 import errorHandler from "../middlewares/errorHandler";
 
 const app = express();
@@ -18,6 +19,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // ----- Routes -----
 app.use("/api", userRoutes);
+app.use("/api", genreRoutes);
 
 app.use(errorHandler);
 
