@@ -13,8 +13,14 @@ const userSchema = z.object({
     (val) => (typeof val === "string" ? new Date(val) : val),
     z.date()
   ),
-  createdAt: z.date().default(() => new Date()),
-  updatedAt: z.date().default(() => new Date()),
+  createdAt: z
+    .date()
+    .optional()
+    .default(() => new Date()),
+  updatedAt: z
+    .date()
+    .optional()
+    .default(() => new Date()),
   userType: UserType,
 });
 

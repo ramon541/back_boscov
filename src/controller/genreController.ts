@@ -24,6 +24,7 @@ const genreController: IApiGenreController = {
         };
 
         res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
       }
 
       response = {
@@ -33,6 +34,7 @@ const genreController: IApiGenreController = {
       };
 
       res.status(StatusCodes.CREATED).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -47,6 +49,7 @@ const genreController: IApiGenreController = {
       if (isNaN(genreId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
       }
       const genre = await prisma.genre.findUnique({
         where: {
@@ -55,14 +58,16 @@ const genreController: IApiGenreController = {
       });
       if (!genre) {
         response = {
-          success: true,
+          success: false,
           message: "Genre don't exist!",
           data: null,
         };
         res.status(StatusCodes.IM_A_TEAPOT).json(response);
+        return;
       }
       response = { success: true, message: "Genre found!", data: genre };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -82,10 +87,12 @@ const genreController: IApiGenreController = {
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
+        return;
       }
 
       response = { success: true, message: "Genres found!", data: genres };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -106,16 +113,18 @@ const genreController: IApiGenreController = {
 
       if (!genre) {
         response = {
-          success: true,
+          success: false,
           message: "Genre don't exist!",
           data: null,
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
+        return;
       }
 
       response = { success: true, message: "Genre updated!", data: genre };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -130,6 +139,7 @@ const genreController: IApiGenreController = {
       if (isNaN(genreId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
       }
 
       const data = await prisma.genre.delete({
@@ -140,20 +150,22 @@ const genreController: IApiGenreController = {
 
       if (!data) {
         response = {
-          success: true,
+          success: false,
           message: "Genre don't exist!",
           data: null,
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
+        return;
       }
 
       response = { success: true, message: "Genre deleted!", data: true };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
   },
-} as const;
+};
 
 export default genreController;

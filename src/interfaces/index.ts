@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 
 export interface IResponse<T> {
   success: boolean;
@@ -7,9 +7,9 @@ export interface IResponse<T> {
 }
 
 export interface IApiController<T> {
-  create: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  get: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  getAll: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  update: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  delete: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+  create: RequestHandler;
+  get: RequestHandler;
+  getAll: RequestHandler;
+  update: RequestHandler;
+  delete: RequestHandler;
 }

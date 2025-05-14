@@ -1,25 +1,26 @@
 import { StatusCodes } from "http-status-codes";
 
-import genreMovieSchema, { IGenreMovie } from "../models/genreMovie";
+import movieSchema, { IMovie } from "../models/movie";
 import { IApiController, IResponse } from "../interfaces";
 import prisma from "../../prisma/prismaClient";
 
-export type IApiGenreMovieController = IApiController<IGenreMovie>;
+export type IApiMovieController = IApiController<IMovie>;
 
-const genreMovieController: IApiGenreMovieController = {
+const movieController: IApiMovieController = {
   create: async (req, res, next) => {
     let response: IResponse<number | null> | null = null;
-    try {
-      const data = genreMovieSchema.parse(req.body);
 
-      const genreMovie = await prisma.genreMovie.create({
+    try {
+      const data = movieSchema.parse(req.body);
+
+      const movie = await prisma.movie.create({
         data,
       });
 
-      if (!genreMovie) {
+      if (!movie) {
         response = {
           success: false,
-          message: "Genre Movie not created!",
+          message: "Movie not created!",
           data: null,
         };
 
@@ -29,8 +30,8 @@ const genreMovieController: IApiGenreMovieController = {
 
       response = {
         success: true,
-        message: "Genre created!",
-        data: genreMovie.id,
+        message: "Movie created!",
+        data: movie.id,
       };
 
       res.status(StatusCodes.CREATED).json(response);
@@ -42,34 +43,31 @@ const genreMovieController: IApiGenreMovieController = {
 
   // ==========================================================================
   get: async (req, res, next) => {
-    let response: IResponse<IGenreMovie | null> | null = null;
-    try {
-      const genreMovieId = Number(req.params.id);
+    let response: IResponse<IMovie | null> | null = null;
 
-      if (isNaN(genreMovieId)) {
+    try {
+      const userId = Number(req.params.id);
+
+      if (isNaN(userId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
         return;
       }
-      const genreMovie = await prisma.genreMovie.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
-          id: genreMovieId,
+          id: userId,
         },
       });
-      if (!genreMovie) {
+      if (!user) {
         response = {
-          success: true,
-          message: "Genre Movie don't exist!",
+          success: false,
+          message: "User don't exist!",
           data: null,
         };
         res.status(StatusCodes.IM_A_TEAPOT).json(response);
         return;
       }
-      response = {
-        success: true,
-        message: "Genre Movie found!",
-        data: genreMovie,
-      };
+      response = { success: true, message: "User found!", data: user };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -79,11 +77,12 @@ const genreMovieController: IApiGenreMovieController = {
 
   // ==========================================================================
   getAll: async (req, res, next) => {
-    let response: IResponse<Array<IGenreMovie> | null> | null = null;
-    try {
-      const genreMovies = await prisma.genreMovie.findMany();
+    let response: IResponse<Array<IUser> | null> | null = null;
 
-      if (!genreMovies) {
+    try {
+      const users = await prisma.user.findMany();
+
+      if (!users) {
         response = {
           success: true,
           message: "Database is empty!",
@@ -94,11 +93,7 @@ const genreMovieController: IApiGenreMovieController = {
         return;
       }
 
-      response = {
-        success: true,
-        message: "Genre Movies found!",
-        data: genreMovies,
-      };
+      response = { success: true, message: "Users found!", data: users };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -108,21 +103,23 @@ const genreMovieController: IApiGenreMovieController = {
 
   // ==========================================================================
   update: async (req, res, next) => {
-    let response: IResponse<IGenreMovie | null> | null = null;
+    let response: IResponse<IUser | null> | null = null;
     try {
-      const data = genreMovieSchema.parse(req.body);
+      const data = movieSchema.parse(req.body);
 
-      const genreMovie = await prisma.genreMovie.update({
+      const { createdAt, ...updateData } = data;
+
+      const user = await prisma.user.update({
         where: {
           id: Number(req.body.id),
         },
-        data,
+        data: updateData,
       });
 
-      if (!genreMovie) {
+      if (!user) {
         response = {
           success: false,
-          message: "Genre Movie don't exist!",
+          message: "User don't exist!",
           data: null,
         };
 
@@ -130,11 +127,7 @@ const genreMovieController: IApiGenreMovieController = {
         return;
       }
 
-      response = {
-        success: true,
-        message: "Genre Movie updated!",
-        data: genreMovie,
-      };
+      response = { success: true, message: "User updated!", data: user };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -145,16 +138,17 @@ const genreMovieController: IApiGenreMovieController = {
   // ==========================================================================
   delete: async (req, res, next) => {
     let response: IResponse<boolean | null> | null = null;
-    try {
-      const genreMovieId = Number(req.params.id);
 
-      if (isNaN(genreMovieId)) {
+    try {
+      const userId = Number(req.params.id);
+
+      if (isNaN(userId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
         return;
       }
 
-      const data = await prisma.genreMovie.delete({
+      const data = await prisma.user.delete({
         where: {
           id: Number(req.params.id),
         },
@@ -163,7 +157,7 @@ const genreMovieController: IApiGenreMovieController = {
       if (!data) {
         response = {
           success: false,
-          message: "Genre don't exist!",
+          message: "User don't exist!",
           data: null,
         };
 
@@ -171,7 +165,7 @@ const genreMovieController: IApiGenreMovieController = {
         return;
       }
 
-      response = { success: true, message: "Genre deleted!", data: true };
+      response = { success: true, message: "User deleted!", data: true };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -180,4 +174,4 @@ const genreMovieController: IApiGenreMovieController = {
   },
 };
 
-export default genreMovieController;
+export default movieController;

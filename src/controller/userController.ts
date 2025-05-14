@@ -25,6 +25,7 @@ const userController: IApiUserController = {
         };
 
         res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
       }
 
       response = {
@@ -34,6 +35,7 @@ const userController: IApiUserController = {
       };
 
       res.status(StatusCodes.CREATED).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -49,6 +51,7 @@ const userController: IApiUserController = {
       if (isNaN(userId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
       }
       const user = await prisma.user.findUnique({
         where: {
@@ -57,14 +60,16 @@ const userController: IApiUserController = {
       });
       if (!user) {
         response = {
-          success: true,
+          success: false,
           message: "User don't exist!",
           data: null,
         };
         res.status(StatusCodes.IM_A_TEAPOT).json(response);
+        return;
       }
       response = { success: true, message: "User found!", data: user };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -85,10 +90,12 @@ const userController: IApiUserController = {
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
+        return;
       }
 
       response = { success: true, message: "Users found!", data: users };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -97,29 +104,32 @@ const userController: IApiUserController = {
   // ==========================================================================
   update: async (req, res, next) => {
     let response: IResponse<IUser | null> | null = null;
-    // TODO: Ajustar para não alterar a data de criação!!
     try {
       const data = userSchema.parse(req.body);
+
+      const { createdAt, ...updateData } = data;
 
       const user = await prisma.user.update({
         where: {
           id: Number(req.body.id),
         },
-        data,
+        data: updateData,
       });
 
       if (!user) {
         response = {
-          success: true,
+          success: false,
           message: "User don't exist!",
           data: null,
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
+        return;
       }
 
       response = { success: true, message: "User updated!", data: user };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
@@ -135,6 +145,7 @@ const userController: IApiUserController = {
       if (isNaN(userId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
       }
 
       const data = await prisma.user.delete({
@@ -145,20 +156,22 @@ const userController: IApiUserController = {
 
       if (!data) {
         response = {
-          success: true,
+          success: false,
           message: "User don't exist!",
           data: null,
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
+        return;
       }
 
       response = { success: true, message: "User deleted!", data: true };
       res.status(StatusCodes.OK).json(response);
+      return;
     } catch (error) {
       next(error);
     }
   },
-} as const;
+};
 
 export default userController;

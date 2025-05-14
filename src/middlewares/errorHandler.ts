@@ -2,19 +2,20 @@ import { ZodError } from "zod";
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
-function errorHandler(
+async function errorHandler(
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   if (err instanceof ZodError) {
-    const messages = err.errors.map((e) => e.message);
+    const messages = err.errors.map((e) => e.path.join(".") + ": " + e.message);
     res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
       message: messages,
       data: null,
     });
+    return;
   }
 
   const message = err instanceof Error ? err.message : "Erro desconhecido";
@@ -23,6 +24,7 @@ function errorHandler(
     message: `Erro interno do servidor: ${message}`,
     data: null,
   });
+  return;
 }
 
 export default errorHandler;
