@@ -29,7 +29,7 @@ const genreMovieController: IApiGenreMovieController = {
 
       response = {
         success: true,
-        message: "Genre created!",
+        message: "Genre Movie created!",
         data: genreMovie.id,
       };
 
@@ -59,10 +59,10 @@ const genreMovieController: IApiGenreMovieController = {
       if (!genreMovie) {
         response = {
           success: true,
-          message: "Genre Movie don't exist!",
+          message: "Genre Movie doesn't exist!",
           data: null,
         };
-        res.status(StatusCodes.IM_A_TEAPOT).json(response);
+        res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
       response = {
@@ -83,11 +83,11 @@ const genreMovieController: IApiGenreMovieController = {
     try {
       const genreMovies = await prisma.genreMovie.findMany();
 
-      if (!genreMovies) {
+      if (!genreMovies || genreMovies.length === 0) {
         response = {
           success: true,
           message: "Database is empty!",
-          data: null,
+          data: [],
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
@@ -112,23 +112,27 @@ const genreMovieController: IApiGenreMovieController = {
     try {
       const data = genreMovieSchema.parse(req.body);
 
+      const existingGenreMovie = await prisma.genreMovie.findUnique({
+        where: { id: Number(req.body.id) },
+      });
+
+      if (!existingGenreMovie) {
+        response = {
+          success: false,
+          message: "Genre Movie doesn't exist!",
+          data: null,
+        };
+
+        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
+      }
+
       const genreMovie = await prisma.genreMovie.update({
         where: {
           id: Number(req.body.id),
         },
         data,
       });
-
-      if (!genreMovie) {
-        response = {
-          success: false,
-          message: "Genre Movie don't exist!",
-          data: null,
-        };
-
-        res.status(StatusCodes.NO_CONTENT).json(response);
-        return;
-      }
 
       response = {
         success: true,
@@ -154,6 +158,21 @@ const genreMovieController: IApiGenreMovieController = {
         return;
       }
 
+      const existingGenreMovie = await prisma.genreMovie.findUnique({
+        where: { id: Number(req.params.id) },
+      });
+
+      if (!existingGenreMovie) {
+        response = {
+          success: false,
+          message: "Genre Movie doesn't exist!",
+          data: null,
+        };
+
+        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
+      }
+
       const data = await prisma.genreMovie.delete({
         where: {
           id: Number(req.params.id),
@@ -163,7 +182,7 @@ const genreMovieController: IApiGenreMovieController = {
       if (!data) {
         response = {
           success: false,
-          message: "Genre don't exist!",
+          message: "Genre doesn't exist!",
           data: null,
         };
 

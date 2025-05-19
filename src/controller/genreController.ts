@@ -59,10 +59,10 @@ const genreController: IApiGenreController = {
       if (!genre) {
         response = {
           success: false,
-          message: "Genre don't exist!",
+          message: "Genre doesn't exist!",
           data: null,
         };
-        res.status(StatusCodes.IM_A_TEAPOT).json(response);
+        res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
       response = { success: true, message: "Genre found!", data: genre };
@@ -79,11 +79,11 @@ const genreController: IApiGenreController = {
     try {
       const genres = await prisma.genre.findMany();
 
-      if (!genres) {
+      if (!genres || genres.length === 0) {
         response = {
           success: true,
           message: "Database is empty!",
-          data: null,
+          data: [],
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
@@ -104,23 +104,27 @@ const genreController: IApiGenreController = {
     try {
       const data = genreSchema.parse(req.body);
 
+      const existingGenre = await prisma.genre.findUnique({
+        where: { id: Number(req.body.id) },
+      });
+
+      if (!existingGenre) {
+        response = {
+          success: false,
+          message: "Genre doesn't exist!",
+          data: null,
+        };
+
+        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
+      }
+
       const genre = await prisma.genre.update({
         where: {
           id: Number(req.body.id),
         },
         data,
       });
-
-      if (!genre) {
-        response = {
-          success: false,
-          message: "Genre don't exist!",
-          data: null,
-        };
-
-        res.status(StatusCodes.NO_CONTENT).json(response);
-        return;
-      }
 
       response = { success: true, message: "Genre updated!", data: genre };
       res.status(StatusCodes.OK).json(response);
@@ -142,6 +146,21 @@ const genreController: IApiGenreController = {
         return;
       }
 
+      const existingGenre = await prisma.genre.findUnique({
+        where: { id: Number(req.params.id) },
+      });
+
+      if (!existingGenre) {
+        response = {
+          success: false,
+          message: "Genre doesn't exist!",
+          data: null,
+        };
+
+        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
+      }
+
       const data = await prisma.genre.delete({
         where: {
           id: Number(req.params.id),
@@ -151,7 +170,7 @@ const genreController: IApiGenreController = {
       if (!data) {
         response = {
           success: false,
-          message: "Genre don't exist!",
+          message: "Genre doesn't exist!",
           data: null,
         };
 

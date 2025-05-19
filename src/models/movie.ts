@@ -1,15 +1,23 @@
 import z from "zod";
 
+export const MovieClassification = z.enum([
+  "C_L",
+  "C_10",
+  "C_12",
+  "C_14",
+  "C_16",
+  "C_18",
+]);
+
 const movieSchema = z.object({
   id: z.number().int().optional(),
   name: z.string(),
   director: z.string(),
-  releaseYear: z.date(),
-  genreId: z.number().int(),
+  releaseYear: z.string(),
   duration: z.string(),
-  production: z.string().optional(),
-  classification: z.number().int(),
-  poster: z.string().url().optional(),
+  production: z.string(),
+  classification: MovieClassification,
+  poster: z.string().url().nullable().optional(),
 });
 
 export interface IMovie extends z.infer<typeof movieSchema> {}

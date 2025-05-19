@@ -61,10 +61,10 @@ const userController: IApiUserController = {
       if (!user) {
         response = {
           success: false,
-          message: "User don't exist!",
+          message: "User doesn't exist!",
           data: null,
         };
-        res.status(StatusCodes.IM_A_TEAPOT).json(response);
+        res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
       response = { success: true, message: "User found!", data: user };
@@ -82,11 +82,11 @@ const userController: IApiUserController = {
     try {
       const users = await prisma.user.findMany();
 
-      if (!users) {
+      if (!users || users.length === 0) {
         response = {
           success: true,
           message: "Database is empty!",
-          data: null,
+          data: [],
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
@@ -109,23 +109,27 @@ const userController: IApiUserController = {
 
       const { createdAt, ...updateData } = data;
 
+      const existingUser = await prisma.user.findUnique({
+        where: { id: Number(req.body.id) },
+      });
+
+      if (!existingUser) {
+        response = {
+          success: false,
+          message: "User doesn't exist!",
+          data: null,
+        };
+
+        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
+      }
+
       const user = await prisma.user.update({
         where: {
           id: Number(req.body.id),
         },
         data: updateData,
       });
-
-      if (!user) {
-        response = {
-          success: false,
-          message: "User don't exist!",
-          data: null,
-        };
-
-        res.status(StatusCodes.NO_CONTENT).json(response);
-        return;
-      }
 
       response = { success: true, message: "User updated!", data: user };
       res.status(StatusCodes.OK).json(response);
@@ -148,6 +152,21 @@ const userController: IApiUserController = {
         return;
       }
 
+      const existingUser = await prisma.user.findUnique({
+        where: { id: Number(req.params.id) },
+      });
+
+      if (!existingUser) {
+        response = {
+          success: false,
+          message: "User doesn't exist!",
+          data: null,
+        };
+
+        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
+      }
+
       const data = await prisma.user.delete({
         where: {
           id: Number(req.params.id),
@@ -157,7 +176,7 @@ const userController: IApiUserController = {
       if (!data) {
         response = {
           success: false,
-          message: "User don't exist!",
+          message: "User doesn't exist!",
           data: null,
         };
 

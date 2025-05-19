@@ -38,23 +38,28 @@ model genre {
   description String
   
   movies      genreMovie[]
-  movie       movie[]
 }
 
+enum MovieClassification {
+  C_L  // Livre
+  C_10 // 10 anos
+  C_12 // 12 anos
+  C_14 // 14 anos
+  C_16 // 16 anos
+  C_18 // 18 anos
+}
 model movie {
   id              Int       @id @default(autoincrement())
   name            String
   director        String
-  releaseYear     DateTime
-  genreId         Int
+  releaseYear     String
   duration        String
-  production      String?
-  classification  Int
+  production      String
+  classification  MovieClassification
   poster          String?
   
   genres          genreMovie[]
   reviews         review[]
-  genre           genre     @relation(fields: [genreId], references: [id])  
 }
 
 model genreMovie {
@@ -64,6 +69,8 @@ model genreMovie {
 
   genre     genre @relation(fields: [genreId], references: [id])
   movie     movie @relation(fields: [movieId], references: [id])
+
+  @@unique([genreId, movieId])
 }
 
 model review {

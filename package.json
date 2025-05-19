@@ -1,6 +1,7 @@
 {
   "scripts": {
     "dev": "tsx watch src/http/server.ts",
+    "prisma:dev": "npx prisma migrate dev",
     "prisma:reset": "npx prisma migrate reset",
     "prisma:deploy": "npx prisma migrate deploy"
   },

@@ -13,6 +13,19 @@ const movieController: IApiMovieController = {
     try {
       const data = movieSchema.parse(req.body);
 
+      if (data.releaseYear) {
+        const year = Number(data.releaseYear);
+        if (isNaN(year) || year < 1000 || year > new Date().getFullYear()) {
+          response = {
+            success: false,
+            message: "Invalid releaseYear provided!",
+            data: null,
+          };
+          res.status(StatusCodes.BAD_REQUEST).json(response);
+          return;
+        }
+      }
+      console.log(data);
       const movie = await prisma.movie.create({
         data,
       });
@@ -46,28 +59,28 @@ const movieController: IApiMovieController = {
     let response: IResponse<IMovie | null> | null = null;
 
     try {
-      const userId = Number(req.params.id);
+      const movieId = Number(req.params.id);
 
-      if (isNaN(userId)) {
+      if (isNaN(movieId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
         return;
       }
-      const user = await prisma.user.findUnique({
+      const movie = await prisma.movie.findUnique({
         where: {
-          id: userId,
+          id: movieId,
         },
       });
-      if (!user) {
+      if (!movie) {
         response = {
           success: false,
-          message: "User don't exist!",
+          message: "Movie doesn't exist!",
           data: null,
         };
-        res.status(StatusCodes.IM_A_TEAPOT).json(response);
+        res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
-      response = { success: true, message: "User found!", data: user };
+      response = { success: true, message: "Movie found!", data: movie };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -77,23 +90,23 @@ const movieController: IApiMovieController = {
 
   // ==========================================================================
   getAll: async (req, res, next) => {
-    let response: IResponse<Array<IUser> | null> | null = null;
+    let response: IResponse<Array<IMovie> | null> | null = null;
 
     try {
-      const users = await prisma.user.findMany();
+      const movies = await prisma.movie.findMany();
 
-      if (!users) {
+      if (!movies || movies.length === 0) {
         response = {
           success: true,
           message: "Database is empty!",
-          data: null,
+          data: [],
         };
 
         res.status(StatusCodes.NO_CONTENT).json(response);
         return;
       }
 
-      response = { success: true, message: "Users found!", data: users };
+      response = { success: true, message: "Movies found!", data: movies };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -103,31 +116,33 @@ const movieController: IApiMovieController = {
 
   // ==========================================================================
   update: async (req, res, next) => {
-    let response: IResponse<IUser | null> | null = null;
+    let response: IResponse<IMovie | null> | null = null;
     try {
       const data = movieSchema.parse(req.body);
 
-      const { createdAt, ...updateData } = data;
-
-      const user = await prisma.user.update({
-        where: {
-          id: Number(req.body.id),
-        },
-        data: updateData,
+      const existingMovie = await prisma.movie.findUnique({
+        where: { id: Number(req.body.id) },
       });
 
-      if (!user) {
+      if (!existingMovie) {
         response = {
           success: false,
-          message: "User don't exist!",
+          message: "Movie doesn't exist!",
           data: null,
         };
 
-        res.status(StatusCodes.NO_CONTENT).json(response);
+        res.status(StatusCodes.BAD_REQUEST).json(response);
         return;
       }
 
-      response = { success: true, message: "User updated!", data: user };
+      const movie = await prisma.movie.update({
+        where: {
+          id: Number(req.body.id),
+        },
+        data,
+      });
+
+      response = { success: true, message: "Movie updated!", data: movie };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -140,15 +155,30 @@ const movieController: IApiMovieController = {
     let response: IResponse<boolean | null> | null = null;
 
     try {
-      const userId = Number(req.params.id);
+      const movieId = Number(req.params.id);
 
-      if (isNaN(userId)) {
+      if (isNaN(movieId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
         return;
       }
 
-      const data = await prisma.user.delete({
+      const existingMovie = await prisma.movie.findUnique({
+        where: { id: Number(req.params.id) },
+      });
+
+      if (!existingMovie) {
+        response = {
+          success: false,
+          message: "Movie doesn't exist!",
+          data: null,
+        };
+
+        res.status(StatusCodes.BAD_REQUEST).json(response);
+        return;
+      }
+
+      const data = await prisma.movie.delete({
         where: {
           id: Number(req.params.id),
         },
@@ -157,7 +187,7 @@ const movieController: IApiMovieController = {
       if (!data) {
         response = {
           success: false,
-          message: "User don't exist!",
+          message: "Movie doesn't exist!",
           data: null,
         };
 
@@ -165,7 +195,7 @@ const movieController: IApiMovieController = {
         return;
       }
 
-      response = { success: true, message: "User deleted!", data: true };
+      response = { success: true, message: "Movie deleted!", data: true };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
