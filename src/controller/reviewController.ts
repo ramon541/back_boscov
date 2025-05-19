@@ -1,26 +1,26 @@
 import { StatusCodes } from "http-status-codes";
 
-import movieSchema, { IMovie } from "../models/movie";
+import reviewSchema, { IReview } from "../models/review";
 import { IApiController, IResponse } from "../interfaces";
 import prisma from "../../prisma/prismaClient";
 
-export type IApiMovieController = IApiController<IMovie>;
+export type IApiReviewController = IApiController<IReview>;
 
-const movieController: IApiMovieController = {
+const reviewController: IApiReviewController = {
   create: async (req, res, next) => {
     let response: IResponse<number | null> | null = null;
 
     try {
-      const data = movieSchema.parse(req.body);
+      const data = reviewSchema.parse(req.body);
 
-      const movie = await prisma.movie.create({
+      const review = await prisma.review.create({
         data,
       });
 
-      if (!movie) {
+      if (!review) {
         response = {
           success: false,
-          message: "Movie not created!",
+          message: "Review not created!",
           data: null,
         };
 
@@ -30,8 +30,8 @@ const movieController: IApiMovieController = {
 
       response = {
         success: true,
-        message: "Movie created!",
-        data: movie.id,
+        message: "Review created!",
+        data: review.id,
       };
 
       res.status(StatusCodes.CREATED).json(response);
@@ -43,31 +43,31 @@ const movieController: IApiMovieController = {
 
   // ==========================================================================
   get: async (req, res, next) => {
-    let response: IResponse<IMovie | null> | null = null;
+    let response: IResponse<IReview | null> | null = null;
 
     try {
-      const movieId = Number(req.params.id);
+      const reviewId = Number(req.params.id);
 
-      if (isNaN(movieId)) {
+      if (isNaN(reviewId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
         return;
       }
-      const movie = await prisma.movie.findUnique({
+      const review = await prisma.review.findUnique({
         where: {
-          id: movieId,
+          id: reviewId,
         },
       });
-      if (!movie) {
+      if (!review) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Review doesn't exist!",
           data: null,
         };
         res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
-      response = { success: true, message: "Movie found!", data: movie };
+      response = { success: true, message: "Review found!", data: review };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -77,12 +77,12 @@ const movieController: IApiMovieController = {
 
   // ==========================================================================
   getAll: async (req, res, next) => {
-    let response: IResponse<Array<IMovie> | null> | null = null;
+    let response: IResponse<Array<IReview> | null> | null = null;
 
     try {
-      const movies = await prisma.movie.findMany();
+      const reviews = await prisma.review.findMany();
 
-      if (!movies || movies.length === 0) {
+      if (!reviews || reviews.length === 0) {
         response = {
           success: true,
           message: "Database is empty!",
@@ -93,7 +93,7 @@ const movieController: IApiMovieController = {
         return;
       }
 
-      response = { success: true, message: "Movies found!", data: movies };
+      response = { success: true, message: "Reviews found!", data: reviews };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -103,18 +103,18 @@ const movieController: IApiMovieController = {
 
   // ==========================================================================
   update: async (req, res, next) => {
-    let response: IResponse<IMovie | null> | null = null;
+    let response: IResponse<IReview | null> | null = null;
     try {
-      const data = movieSchema.parse(req.body);
+      const data = reviewSchema.parse(req.body);
 
-      const existingMovie = await prisma.movie.findUnique({
+      const existingReview = await prisma.review.findUnique({
         where: { id: Number(req.body.id) },
       });
 
-      if (!existingMovie) {
+      if (!existingReview) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Review doesn't exist!",
           data: null,
         };
 
@@ -122,14 +122,14 @@ const movieController: IApiMovieController = {
         return;
       }
 
-      const movie = await prisma.movie.update({
+      const review = await prisma.review.update({
         where: {
           id: Number(req.body.id),
         },
         data,
       });
 
-      response = { success: true, message: "Movie updated!", data: movie };
+      response = { success: true, message: "Review updated!", data: review };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -142,22 +142,22 @@ const movieController: IApiMovieController = {
     let response: IResponse<boolean | null> | null = null;
 
     try {
-      const movieId = Number(req.params.id);
+      const reviewId = Number(req.params.id);
 
-      if (isNaN(movieId)) {
+      if (isNaN(reviewId)) {
         response = { success: false, message: "Invalid params", data: null };
         res.status(StatusCodes.BAD_REQUEST).json(response);
         return;
       }
 
-      const existingMovie = await prisma.movie.findUnique({
+      const existingReview = await prisma.review.findUnique({
         where: { id: Number(req.params.id) },
       });
 
-      if (!existingMovie) {
+      if (!existingReview) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Review doesn't exist!",
           data: null,
         };
 
@@ -165,7 +165,7 @@ const movieController: IApiMovieController = {
         return;
       }
 
-      const data = await prisma.movie.delete({
+      const data = await prisma.review.delete({
         where: {
           id: Number(req.params.id),
         },
@@ -174,7 +174,7 @@ const movieController: IApiMovieController = {
       if (!data) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Review doesn't exist!",
           data: null,
         };
 
@@ -182,7 +182,7 @@ const movieController: IApiMovieController = {
         return;
       }
 
-      response = { success: true, message: "Movie deleted!", data: true };
+      response = { success: true, message: "Review deleted!", data: true };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -191,4 +191,4 @@ const movieController: IApiMovieController = {
   },
 };
 
-export default movieController;
+export default reviewController;

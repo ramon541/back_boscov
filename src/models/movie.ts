@@ -13,7 +13,14 @@ const movieSchema = z.object({
   id: z.number().int().optional(),
   name: z.string(),
   director: z.string(),
-  releaseYear: z.string(),
+  releaseYear: z
+    .number()
+    .int()
+    .min(1888, "O ano de lançamento deve ser maior que 1888")
+    .max(
+      new Date().getFullYear(),
+      "O ano de lançamento deve ser menor ou igual ao ano atual"
+    ),
   duration: z.string(),
   production: z.string(),
   classification: MovieClassification,

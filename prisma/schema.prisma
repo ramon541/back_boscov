@@ -52,7 +52,7 @@ model movie {
   id              Int       @id @default(autoincrement())
   name            String
   director        String
-  releaseYear     String
+  releaseYear     Int
   duration        String
   production      String
   classification  MovieClassification

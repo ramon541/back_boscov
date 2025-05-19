@@ -8,6 +8,7 @@ import genreRoutes from "../routes/genreRoutes";
 import errorHandler from "../middlewares/errorHandler";
 import genreMovieRoutes from "../routes/genreMovieRoutes";
 import movieRoutes from "../routes/movieRoutes";
+import reviewRoutes from "../routes/reviewRoutes";
 
 const app = express();
 const port = 3000;
@@ -24,6 +25,7 @@ app.use("/api", userRoutes);
 app.use("/api", genreRoutes);
 app.use("/api", genreMovieRoutes);
 app.use("/api", movieRoutes);
+app.use("/api", reviewRoutes);
 
 app.use(errorHandler);
 
