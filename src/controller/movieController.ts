@@ -20,7 +20,7 @@ const movieController: IApiMovieController = {
       if (!movie) {
         response = {
           success: false,
-          message: "Movie not created!",
+          message: "Não foi possível adicionar o filme!",
           data: null,
         };
 
@@ -30,7 +30,7 @@ const movieController: IApiMovieController = {
 
       response = {
         success: true,
-        message: "Movie created!",
+        message: "Filme adicionado com sucesso!",
         data: movie.id,
       };
 
@@ -61,13 +61,13 @@ const movieController: IApiMovieController = {
       if (!movie) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Esse filme não existe!",
           data: null,
         };
         res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
-      response = { success: true, message: "Movie found!", data: movie };
+      response = { success: true, message: "Filme encontrado!", data: movie };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -93,7 +93,11 @@ const movieController: IApiMovieController = {
         return;
       }
 
-      response = { success: true, message: "Movies found!", data: movies };
+      response = {
+        success: true,
+        message: "Filmes encontrados!",
+        data: movies,
+      };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -114,7 +118,7 @@ const movieController: IApiMovieController = {
       if (!existingMovie) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Esse filme não existe!",
           data: null,
         };
 
@@ -129,7 +133,7 @@ const movieController: IApiMovieController = {
         data,
       });
 
-      response = { success: true, message: "Movie updated!", data: movie };
+      response = { success: true, message: "Filme atualizado!", data: movie };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -157,7 +161,7 @@ const movieController: IApiMovieController = {
       if (!existingMovie) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Esse filme não existe!",
           data: null,
         };
 
@@ -174,7 +178,7 @@ const movieController: IApiMovieController = {
       if (!data) {
         response = {
           success: false,
-          message: "Movie doesn't exist!",
+          message: "Esse filme não existe!",
           data: null,
         };
 
@@ -182,7 +186,7 @@ const movieController: IApiMovieController = {
         return;
       }
 
-      response = { success: true, message: "Movie deleted!", data: true };
+      response = { success: true, message: "Filme deletado!", data: true };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {

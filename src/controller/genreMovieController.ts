@@ -19,7 +19,7 @@ const genreMovieController: IApiGenreMovieController = {
       if (!genreMovie) {
         response = {
           success: false,
-          message: "Genre Movie not created!",
+          message: "Não foi possível adicionar o gênero ao filme!",
           data: null,
         };
 
@@ -29,7 +29,7 @@ const genreMovieController: IApiGenreMovieController = {
 
       response = {
         success: true,
-        message: "Genre Movie created!",
+        message: "Gênero do filme adicionado com sucesso!",
         data: genreMovie.id,
       };
 
@@ -59,7 +59,7 @@ const genreMovieController: IApiGenreMovieController = {
       if (!genreMovie) {
         response = {
           success: true,
-          message: "Genre Movie doesn't exist!",
+          message: "Esse gênero do filme não existe!",
           data: null,
         };
         res.status(StatusCodes.NOT_FOUND).json(response);
@@ -67,7 +67,7 @@ const genreMovieController: IApiGenreMovieController = {
       }
       response = {
         success: true,
-        message: "Genre Movie found!",
+        message: "Gênero do filme encontrado!",
         data: genreMovie,
       };
       res.status(StatusCodes.OK).json(response);
@@ -96,7 +96,7 @@ const genreMovieController: IApiGenreMovieController = {
 
       response = {
         success: true,
-        message: "Genre Movies found!",
+        message: "Gêneros dos filmes encontrados!",
         data: genreMovies,
       };
       res.status(StatusCodes.OK).json(response);
@@ -119,7 +119,7 @@ const genreMovieController: IApiGenreMovieController = {
       if (!existingGenreMovie) {
         response = {
           success: false,
-          message: "Genre Movie doesn't exist!",
+          message: "Esse gênero do filme não existe!",
           data: null,
         };
 
@@ -136,7 +136,7 @@ const genreMovieController: IApiGenreMovieController = {
 
       response = {
         success: true,
-        message: "Genre Movie updated!",
+        message: "Gênero do filme atualizado!",
         data: genreMovie,
       };
       res.status(StatusCodes.OK).json(response);
@@ -165,7 +165,7 @@ const genreMovieController: IApiGenreMovieController = {
       if (!existingGenreMovie) {
         response = {
           success: false,
-          message: "Genre Movie doesn't exist!",
+          message: "Esse gênero do filme não existe!",
           data: null,
         };
 
@@ -182,7 +182,7 @@ const genreMovieController: IApiGenreMovieController = {
       if (!data) {
         response = {
           success: false,
-          message: "Genre doesn't exist!",
+          message: "Esse gênero do filme não existe!",
           data: null,
         };
 
@@ -190,7 +190,11 @@ const genreMovieController: IApiGenreMovieController = {
         return;
       }
 
-      response = { success: true, message: "Genre deleted!", data: true };
+      response = {
+        success: true,
+        message: "Gênero do filme deletado!",
+        data: true,
+      };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {

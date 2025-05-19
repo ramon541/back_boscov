@@ -20,7 +20,7 @@ const userController: IApiUserController = {
       if (!user) {
         response = {
           success: false,
-          message: "User not created!",
+          message: "Não foi possível adicionar o usuário!",
           data: null,
         };
 
@@ -30,7 +30,7 @@ const userController: IApiUserController = {
 
       response = {
         success: true,
-        message: "User created!",
+        message: "Usuário adicionado com sucesso!",
         data: user.id,
       };
 
@@ -61,13 +61,13 @@ const userController: IApiUserController = {
       if (!user) {
         response = {
           success: false,
-          message: "User doesn't exist!",
+          message: "Esse usuário não existe!",
           data: null,
         };
         res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
-      response = { success: true, message: "User found!", data: user };
+      response = { success: true, message: "Usuário encontrado!", data: user };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -93,7 +93,11 @@ const userController: IApiUserController = {
         return;
       }
 
-      response = { success: true, message: "Users found!", data: users };
+      response = {
+        success: true,
+        message: "Usuários encontrados!",
+        data: users,
+      };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -116,7 +120,7 @@ const userController: IApiUserController = {
       if (!existingUser) {
         response = {
           success: false,
-          message: "User doesn't exist!",
+          message: "Esse usuário não existe!",
           data: null,
         };
 
@@ -131,7 +135,7 @@ const userController: IApiUserController = {
         data: updateData,
       });
 
-      response = { success: true, message: "User updated!", data: user };
+      response = { success: true, message: "Usuário atualizado!", data: user };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -159,7 +163,7 @@ const userController: IApiUserController = {
       if (!existingUser) {
         response = {
           success: false,
-          message: "User doesn't exist!",
+          message: "Esse usuário não existe!",
           data: null,
         };
 
@@ -176,7 +180,7 @@ const userController: IApiUserController = {
       if (!data) {
         response = {
           success: false,
-          message: "User doesn't exist!",
+          message: "Esse usuário não existe!",
           data: null,
         };
 
@@ -184,7 +188,7 @@ const userController: IApiUserController = {
         return;
       }
 
-      response = { success: true, message: "User deleted!", data: true };
+      response = { success: true, message: "Usuário deletado!", data: true };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {

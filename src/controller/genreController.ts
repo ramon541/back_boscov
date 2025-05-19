@@ -19,7 +19,7 @@ const genreController: IApiGenreController = {
       if (!genre) {
         response = {
           success: false,
-          message: "Genre not created!",
+          message: "Não foi possível adicionar o gênero!",
           data: null,
         };
 
@@ -29,7 +29,7 @@ const genreController: IApiGenreController = {
 
       response = {
         success: true,
-        message: "Genre created!",
+        message: "Gênero adicionado com sucesso!",
         data: genre.id,
       };
 
@@ -59,13 +59,13 @@ const genreController: IApiGenreController = {
       if (!genre) {
         response = {
           success: false,
-          message: "Genre doesn't exist!",
+          message: "Esse gênero não existe!",
           data: null,
         };
         res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
-      response = { success: true, message: "Genre found!", data: genre };
+      response = { success: true, message: "Gênero encontrado!", data: genre };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -90,7 +90,11 @@ const genreController: IApiGenreController = {
         return;
       }
 
-      response = { success: true, message: "Genres found!", data: genres };
+      response = {
+        success: true,
+        message: "Gêneros encontrados!",
+        data: genres,
+      };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -111,7 +115,7 @@ const genreController: IApiGenreController = {
       if (!existingGenre) {
         response = {
           success: false,
-          message: "Genre doesn't exist!",
+          message: "Esse gênero não existe!",
           data: null,
         };
 
@@ -126,7 +130,7 @@ const genreController: IApiGenreController = {
         data,
       });
 
-      response = { success: true, message: "Genre updated!", data: genre };
+      response = { success: true, message: "Gênero atualizado!", data: genre };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -153,7 +157,7 @@ const genreController: IApiGenreController = {
       if (!existingGenre) {
         response = {
           success: false,
-          message: "Genre doesn't exist!",
+          message: "Esse gênero não existe!",
           data: null,
         };
 
@@ -170,7 +174,7 @@ const genreController: IApiGenreController = {
       if (!data) {
         response = {
           success: false,
-          message: "Genre doesn't exist!",
+          message: "Esse gênero não existe!",
           data: null,
         };
 
@@ -178,7 +182,7 @@ const genreController: IApiGenreController = {
         return;
       }
 
-      response = { success: true, message: "Genre deleted!", data: true };
+      response = { success: true, message: "Gênero deletado!", data: true };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {

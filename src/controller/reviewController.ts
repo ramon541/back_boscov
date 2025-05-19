@@ -20,7 +20,7 @@ const reviewController: IApiReviewController = {
       if (!review) {
         response = {
           success: false,
-          message: "Review not created!",
+          message: "Não foi possível adicionar a avaliação!",
           data: null,
         };
 
@@ -30,7 +30,7 @@ const reviewController: IApiReviewController = {
 
       response = {
         success: true,
-        message: "Review created!",
+        message: "Avaliação adicionada com sucesso!",
         data: review.id,
       };
 
@@ -61,13 +61,17 @@ const reviewController: IApiReviewController = {
       if (!review) {
         response = {
           success: false,
-          message: "Review doesn't exist!",
+          message: "Essa avaliação não existe!",
           data: null,
         };
         res.status(StatusCodes.NOT_FOUND).json(response);
         return;
       }
-      response = { success: true, message: "Review found!", data: review };
+      response = {
+        success: true,
+        message: "Avaliação encontrada!",
+        data: review,
+      };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -93,7 +97,11 @@ const reviewController: IApiReviewController = {
         return;
       }
 
-      response = { success: true, message: "Reviews found!", data: reviews };
+      response = {
+        success: true,
+        message: "Avaliações encontradas!",
+        data: reviews,
+      };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -114,7 +122,7 @@ const reviewController: IApiReviewController = {
       if (!existingReview) {
         response = {
           success: false,
-          message: "Review doesn't exist!",
+          message: "Essa avaliação não existe!",
           data: null,
         };
 
@@ -129,7 +137,11 @@ const reviewController: IApiReviewController = {
         data,
       });
 
-      response = { success: true, message: "Review updated!", data: review };
+      response = {
+        success: true,
+        message: "Avaliação atualizada!",
+        data: review,
+      };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
@@ -157,7 +169,7 @@ const reviewController: IApiReviewController = {
       if (!existingReview) {
         response = {
           success: false,
-          message: "Review doesn't exist!",
+          message: "Essa avaliação não existe!",
           data: null,
         };
 
@@ -174,7 +186,7 @@ const reviewController: IApiReviewController = {
       if (!data) {
         response = {
           success: false,
-          message: "Review doesn't exist!",
+          message: "Essa avaliação não existe!",
           data: null,
         };
 
@@ -182,7 +194,7 @@ const reviewController: IApiReviewController = {
         return;
       }
 
-      response = { success: true, message: "Review deleted!", data: true };
+      response = { success: true, message: "Avaliação deletada!", data: true };
       res.status(StatusCodes.OK).json(response);
       return;
     } catch (error) {
