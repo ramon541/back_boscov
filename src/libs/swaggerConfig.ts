@@ -1,5 +1,5 @@
-import swaggerJSDoc from "swagger-jsdoc";
-const swaggerOptions = {
+import swaggerJSDoc, { OAS3Options } from "swagger-jsdoc";
+const swaggerOptions: OAS3Options = {
   definition: {
     openapi: "3.0.0",
     info: {
@@ -13,7 +13,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ["./src/http/server.ts"],
+  apis: ["./src/routes/*.ts"],
 };
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 export default swaggerDocs;
