@@ -1,5 +1,6 @@
-import express from "express";
-import userController from "../controller/userController";
+import express from 'express';
+import userController from '../controller/userController';
+import { checkDuplicateEmail, isAdmin, verifyToken } from '../middlewares';
 const userRoutes = express.Router();
 
 /**
@@ -55,7 +56,11 @@ const userRoutes = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
-userRoutes.post("/user", userController.create);
+userRoutes.post(
+    '/user',
+    [verifyToken, isAdmin, checkDuplicateEmail],
+    userController.create
+);
 
 /**
  * @swagger
@@ -81,7 +86,7 @@ userRoutes.post("/user", userController.create);
  *       500:
  *         description: Erro interno do servidor
  */
-userRoutes.get("/user/:id", userController.get);
+userRoutes.get('/user/:id', [verifyToken], userController.get);
 
 /**
  * @swagger
@@ -99,7 +104,7 @@ userRoutes.get("/user/:id", userController.get);
  *         description: Erro interno do servidor
  */
 
-userRoutes.get("/users", userController.getAll);
+userRoutes.get('/users', [verifyToken, isAdmin], userController.getAll);
 
 /**
  * @swagger
@@ -151,7 +156,11 @@ userRoutes.get("/users", userController.getAll);
  *       500:
  *         description: Erro interno do servidor
  */
-userRoutes.put("/user", userController.update);
+userRoutes.put(
+    '/user',
+    [verifyToken, isAdmin, checkDuplicateEmail],
+    userController.update
+);
 
 /**
  * @swagger
@@ -175,6 +184,6 @@ userRoutes.put("/user", userController.update);
  *       500:
  *         description: Erro interno do servidor
  */
-userRoutes.delete("/user/:id", userController.delete);
+userRoutes.delete('/user/:id', [verifyToken, isAdmin], userController.delete);
 
 export default userRoutes;

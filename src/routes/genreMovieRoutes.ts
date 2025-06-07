@@ -1,5 +1,5 @@
-import express from "express";
-import genreMovieController from "../controller/genreMovieController";
+import express from 'express';
+import genreMovieController from '../controller/genreMovieController';
 const genreMovieRoutes = express.Router();
 
 /**
@@ -40,7 +40,7 @@ const genreMovieRoutes = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
-genreMovieRoutes.post("/genreMovie", genreMovieController.create);
+genreMovieRoutes.post('/genreMovie', genreMovieController.create);
 
 /**
  * @swagger
@@ -67,7 +67,7 @@ genreMovieRoutes.post("/genreMovie", genreMovieController.create);
  *       500:
  *         description: Erro interno do servidor
  */
-genreMovieRoutes.get("/genreMovie/:id", genreMovieController.get);
+genreMovieRoutes.get('/genreMovie/:id', genreMovieController.get);
 
 /**
  * @swagger
@@ -85,7 +85,7 @@ genreMovieRoutes.get("/genreMovie/:id", genreMovieController.get);
  *       500:
  *         description: Erro interno do servidor
  */
-genreMovieRoutes.get("/genreMovies", genreMovieController.getAll);
+genreMovieRoutes.get('/genreMovies', genreMovieController.getAll);
 
 /**
  * @swagger
@@ -122,7 +122,7 @@ genreMovieRoutes.get("/genreMovies", genreMovieController.getAll);
  *       500:
  *         description: Erro interno do servidor
  */
-genreMovieRoutes.put("/genreMovie", genreMovieController.update);
+genreMovieRoutes.put('/genreMovie', genreMovieController.update);
 
 /**
  * @swagger
@@ -149,6 +149,6 @@ genreMovieRoutes.put("/genreMovie", genreMovieController.update);
  *       500:
  *         description: Erro interno do servidor
  */
-genreMovieRoutes.delete("/genreMovie/:id", genreMovieController.delete);
+genreMovieRoutes.delete('/genreMovie/:id', genreMovieController.delete);
 
 export default genreMovieRoutes;

@@ -1,5 +1,5 @@
-import express from "express";
-import reviewController from "../controller/reviewController";
+import express from 'express';
+import reviewController from '../controller/reviewController';
 const reviewRoutes = express.Router();
 
 /**
@@ -48,7 +48,7 @@ const reviewRoutes = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
-reviewRoutes.post("/review", reviewController.create);
+reviewRoutes.post('/review', reviewController.create);
 
 /**
  * @swagger
@@ -76,7 +76,7 @@ reviewRoutes.post("/review", reviewController.create);
  *       500:
  *         description: Erro interno do servidor
  */
-reviewRoutes.get("/review/:id", reviewController.get);
+reviewRoutes.get('/review/:id', reviewController.get);
 
 /**
  * @swagger
@@ -94,7 +94,7 @@ reviewRoutes.get("/review/:id", reviewController.get);
  *       500:
  *         description: Erro interno do servidor
  */
-reviewRoutes.get("/reviews", reviewController.getAll);
+reviewRoutes.get('/reviews', reviewController.getAll);
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ reviewRoutes.get("/reviews", reviewController.getAll);
  *       500:
  *         description: Erro interno do servidor
  */
-reviewRoutes.put("/review", reviewController.update);
+reviewRoutes.put('/review', reviewController.update);
 
 /**
  * @swagger
@@ -167,6 +167,6 @@ reviewRoutes.put("/review", reviewController.update);
  *       500:
  *         description: Erro interno do servidor
  */
-reviewRoutes.delete("/review/:id", reviewController.delete);
+reviewRoutes.delete('/review/:id', reviewController.delete);
 
 export default reviewRoutes;

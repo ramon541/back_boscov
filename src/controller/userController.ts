@@ -1,37 +1,18 @@
 import { StatusCodes } from 'http-status-codes';
 
 import userSchema, { IUser } from '../models/user';
-import { IApiController, IResponse } from '../interfaces';
 import prisma from '../../prisma/prismaClient';
 import { generateHash } from '../utils';
+import { RequestHandler } from 'express';
 
-export type IApiUserController = IApiController<IUser>;
+export type IApiUserController = IApiController<RequestHandler>;
 
 const userController: IApiUserController = {
     create: async (req, res, next) => {
         let response: IResponse<number | null> | null = null;
 
         try {
-            if (!req.body.user) req.body.userType = 'C';
-
             const data = userSchema.parse(req.body);
-
-            const alreadyHasUser = await prisma.user.findFirst({
-                where: {
-                    email: data.email,
-                },
-            });
-
-            if (alreadyHasUser) {
-                response = {
-                    success: false,
-                    message: 'Já existe um usuário com esse email!',
-                    data: null,
-                };
-
-                res.status(StatusCodes.BAD_REQUEST).json(response);
-                return;
-            }
 
             data.password = await generateHash(data.password);
 
@@ -63,7 +44,7 @@ const userController: IApiUserController = {
         }
     },
 
-    // ==========================================================================
+    //= =================================================================================
     get: async (req, res, next) => {
         let response: IResponse<IUser | null> | null = null;
 
@@ -130,7 +111,7 @@ const userController: IApiUserController = {
         }
     },
 
-    // ==========================================================================
+    //= =================================================================================
     getAll: async (req, res, next) => {
         let response: IResponse<Array<IUser> | null> | null = null;
 
@@ -160,7 +141,7 @@ const userController: IApiUserController = {
         }
     },
 
-    // ==========================================================================
+    //= =================================================================================
     update: async (req, res, next) => {
         let response: IResponse<IUser | null> | null = null;
         try {
@@ -202,7 +183,7 @@ const userController: IApiUserController = {
         }
     },
 
-    // ==========================================================================
+    //= =================================================================================
     delete: async (req, res, next) => {
         let response: IResponse<boolean | null> | null = null;
 

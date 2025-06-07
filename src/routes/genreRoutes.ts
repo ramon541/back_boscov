@@ -1,5 +1,5 @@
-import express from "express";
-import genreController from "../controller/genreController";
+import express from 'express';
+import genreController from '../controller/genreController';
 const genreRoutes = express.Router();
 
 /**
@@ -36,7 +36,7 @@ const genreRoutes = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
-genreRoutes.post("/genre", genreController.create);
+genreRoutes.post('/genre', genreController.create);
 
 /**
  * @swagger
@@ -63,7 +63,7 @@ genreRoutes.post("/genre", genreController.create);
  *       500:
  *         description: Erro interno do servidor
  */
-genreRoutes.get("/genre/:id", genreController.get);
+genreRoutes.get('/genre/:id', genreController.get);
 
 /**
  * @swagger
@@ -81,7 +81,7 @@ genreRoutes.get("/genre/:id", genreController.get);
  *       500:
  *         description: Erro interno do servidor
  */
-genreRoutes.get("/genres", genreController.getAll);
+genreRoutes.get('/genres', genreController.getAll);
 
 /**
  * @swagger
@@ -114,7 +114,7 @@ genreRoutes.get("/genres", genreController.getAll);
  *       500:
  *         description: Erro interno do servidor
  */
-genreRoutes.put("/genre", genreController.update);
+genreRoutes.put('/genre', genreController.update);
 
 /**
  * @swagger
@@ -141,6 +141,6 @@ genreRoutes.put("/genre", genreController.update);
  *       500:
  *         description: Erro interno do servidor
  */
-genreRoutes.delete("/genre/:id", genreController.delete);
+genreRoutes.delete('/genre/:id', genreController.delete);
 
 export default genreRoutes;

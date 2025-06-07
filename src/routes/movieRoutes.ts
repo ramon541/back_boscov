@@ -1,5 +1,5 @@
-import express from "express";
-import movieController from "../controller/movieController";
+import express from 'express';
+import movieController from '../controller/movieController';
 const movieRoutes = express.Router();
 
 /**
@@ -63,7 +63,7 @@ const movieRoutes = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
-movieRoutes.post("/movie", movieController.create);
+movieRoutes.post('/movie', movieController.create);
 
 /**
  * @swagger
@@ -90,7 +90,7 @@ movieRoutes.post("/movie", movieController.create);
  *       500:
  *         description: Erro interno do servidor
  */
-movieRoutes.get("/movie/:id", movieController.get);
+movieRoutes.get('/movie/:id', movieController.get);
 
 /**
  * @swagger
@@ -108,7 +108,7 @@ movieRoutes.get("/movie/:id", movieController.get);
  *       500:
  *         description: Erro interno do servidor
  */
-movieRoutes.get("/movies", movieController.getAll);
+movieRoutes.get('/movies', movieController.getAll);
 
 /**
  * @swagger
@@ -169,7 +169,7 @@ movieRoutes.get("/movies", movieController.getAll);
  *       500:
  *         description: Erro interno do servidor
  */
-movieRoutes.put("/movie", movieController.update);
+movieRoutes.put('/movie', movieController.update);
 
 /**
  * @swagger
@@ -196,6 +196,6 @@ movieRoutes.put("/movie", movieController.update);
  *       500:
  *         description: Erro interno do servidor
  */
-movieRoutes.delete("/movie/:id", movieController.delete);
+movieRoutes.delete('/movie/:id', movieController.delete);
 
 export default movieRoutes;
