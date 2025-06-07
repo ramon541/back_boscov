@@ -28,7 +28,7 @@ app.use('/api', genreMovieRoutes);
 app.use('/api', movieRoutes);
 app.use('/api', reviewRoutes);
 
-app.use('api', authRoutes);
+app.use('/api', authRoutes);
 
 app.use(errorHandler);
 
