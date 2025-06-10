@@ -12,6 +12,11 @@ interface IApiController<T> {
     delete: T;
 }
 
+interface IReviewController<T> extends IApiController<T> {
+    getAllReviewsByMovieId: T;
+    getUserReviewByMovieId: T;
+}
+
 interface IApiAuthController<T> {
     register: T;
     login: T;

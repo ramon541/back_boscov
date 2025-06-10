@@ -59,7 +59,7 @@ model movie {
   poster          String?
   
   genres          genreMovie[]
-  reviews         review[]
+  // reviews         review[]
 }
 
 model genreMovie {
@@ -81,5 +81,5 @@ model review {
   comment   String?
 
   user      user  @relation(fields: [userId], references: [id])
-  movie     movie @relation(fields: [movieId], references: [id])
+  // movie     movie @relation(fields: [movieId], references: [id])
 }

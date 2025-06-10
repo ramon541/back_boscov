@@ -1,10 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
 
-import reviewSchema, { IReview } from '../models/review';
+import reviewSchema, { IReview, reviewParamsSchema } from '../models/review';
 import prisma from '../../prisma/prismaClient';
 import { RequestHandler } from 'express';
 
-export type IApiReviewController = IApiController<RequestHandler>;
+export type IApiReviewController = IReviewController<RequestHandler>;
 
 const reviewController: IApiReviewController = {
     create: async (req, res, next) => {
@@ -106,6 +106,104 @@ const reviewController: IApiReviewController = {
                 message: 'Avaliações encontradas!',
                 data: reviews,
             };
+            res.status(StatusCodes.OK).json(response);
+            return;
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    //= =================================================================================
+    getAllReviewsByMovieId: async (req, res, next) => {
+        let response: IResponse<Array<IReview> | null> | null = null;
+
+        try {
+            const parseResult = reviewParamsSchema
+                .pick({ movieId: true })
+                .safeParse({
+                    movieId: Number(req.params.movieId),
+                });
+
+            if (!parseResult.success) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    success: false,
+                    message: 'Parâmetro inválido!',
+                    errors: parseResult.error.format(),
+                });
+                return;
+            }
+
+            const { movieId } = parseResult.data;
+
+            const reviews = await prisma.review.findMany({
+                where: { movieId },
+            });
+
+            if (!reviews || reviews.length === 0) {
+                response = {
+                    success: true,
+                    message: 'Nenhuma avaliação encontrada para este filme.',
+                    data: [],
+                };
+                res.status(StatusCodes.NO_CONTENT).json(response);
+                return;
+            }
+
+            response = {
+                success: true,
+                message: 'Avaliações encontradas!',
+                data: reviews,
+            };
+
+            res.status(StatusCodes.OK).json(response);
+            return;
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    //= =================================================================================
+    getUserReviewByMovieId: async (req, res, next) => {
+        let response: IResponse<IReview | null> | null = null;
+
+        try {
+            const parseResult = reviewParamsSchema.safeParse({
+                movieId: Number(req.params.movieId),
+                userId: Number(req.params.userId),
+            });
+
+            if (!parseResult.success) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    success: false,
+                    message: 'Parâmetros inválidos!',
+                    errors: parseResult.error.format(),
+                });
+                return;
+            }
+
+            const { movieId, userId } = parseResult.data;
+
+            const review = await prisma.review.findFirst({
+                where: { movieId, userId },
+            });
+
+            if (!review) {
+                response = {
+                    success: true,
+                    message:
+                        'Nenhuma avaliação encontrada para este usuário neste filme.',
+                    data: null,
+                };
+                res.status(StatusCodes.NO_CONTENT).json(response);
+                return;
+            }
+
+            response = {
+                success: true,
+                message: 'Avaliação encontrada!',
+                data: review,
+            };
+
             res.status(StatusCodes.OK).json(response);
             return;
         } catch (error) {

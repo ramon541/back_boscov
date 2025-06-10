@@ -14,6 +14,11 @@ const reviewSchema = z.object({
     comment: z.string().nullable().optional(),
 });
 
+export const reviewParamsSchema = z.object({
+    movieId: reviewSchema.shape.movieId,
+    userId: reviewSchema.shape.userId.optional(),
+});
+
 export interface IReview extends z.infer<typeof reviewSchema> {}
 
 export default reviewSchema;
