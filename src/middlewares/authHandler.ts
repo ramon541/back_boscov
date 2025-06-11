@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { StatusCodes } from 'http-status-codes';
 import prisma from '../../prisma/prismaClient';
+import { log } from 'console';
 
 //= =================================================================================
 interface AuthJwtPayload extends JwtPayload {
@@ -15,7 +16,6 @@ declare module 'express-serve-static-core' {
 }
 
 export async function verifyToken(
-    err: Error,
     req: Request,
     res: Response,
     next: NextFunction
@@ -23,7 +23,7 @@ export async function verifyToken(
     const tokenHeader =
         req.headers['x-access-token'] || req.headers['authorization'];
     const token = Array.isArray(tokenHeader) ? tokenHeader[0] : tokenHeader;
-
+    log('Token recebido:', token);
     if (!token) {
         res.status(StatusCodes.FORBIDDEN).json({
             success: false,
@@ -70,12 +70,7 @@ export async function verifyToken(
 }
 
 //= =================================================================================
-export async function isAdmin(
-    err: Error,
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+export async function isAdmin(req: Request, res: Response, next: NextFunction) {
     try {
         const user = await prisma.user.findUnique({
             where: { id: req.userId },

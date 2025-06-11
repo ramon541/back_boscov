@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import prisma from '../../prisma/prismaClient';
 
 export async function checkDuplicateEmail(
-    err: Error,
     req: Request,
     res: Response,
     next: NextFunction
