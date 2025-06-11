@@ -23,7 +23,7 @@ export async function verifyToken(
     const tokenHeader =
         req.headers['x-access-token'] || req.headers['authorization'];
     const token = Array.isArray(tokenHeader) ? tokenHeader[0] : tokenHeader;
-    log('Token recebido:', token);
+
     if (!token) {
         res.status(StatusCodes.FORBIDDEN).json({
             success: false,

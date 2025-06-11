@@ -137,6 +137,14 @@ const reviewController: IApiReviewController = {
 
             const reviews = await prisma.review.findMany({
                 where: { movieId },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
             });
 
             if (!reviews || reviews.length === 0) {
@@ -185,6 +193,14 @@ const reviewController: IApiReviewController = {
 
             const review = await prisma.review.findFirst({
                 where: { movieId, userId },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
             });
 
             if (!review) {
